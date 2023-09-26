@@ -1,5 +1,6 @@
 const UserModel = require("../models/user-model");
 const HttpError = require("../shared/HttpError");
+const cartController = require("./cart-controller");
 
 async function getUsers(_req, res, next) {
 	try {
@@ -24,6 +25,7 @@ async function signup(req, res, next) {
 
 	try {
 		await newUser.save();
+
 		res.status(201).json({ mesage: "Sucessfully saved user info to database" });
 	} catch (error) {
 		const e = new HttpError(error, 500);

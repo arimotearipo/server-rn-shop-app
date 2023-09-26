@@ -4,20 +4,19 @@ const mongoose = require("mongoose");
 const userRoutes = require("./router/user-route");
 const productRoutes = require("./router/product-route");
 const cartRoutes = require("./router/cart-route");
+const orderRoutes = require("./router/order-route");
 const errorHandler = require("./middleware/error-handler");
 
 const app = express();
 
-const connectionString = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@rn-shop-app.oo1tbl3.mongodb.net/?retryWrites=true&w=majority`;
-
 app.use(express.json());
-
 app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
+app.use("/api/order", orderRoutes);
 app.use(errorHandler);
 
-mongoose.connect(connectionString);
+mongoose.connect(process.env.DB_CONNECTION);
 
 const db = mongoose.connection;
 db.on("error", (err) => {
@@ -25,4 +24,6 @@ db.on("error", (err) => {
 });
 db.once("open", () => console.log("Database connected"));
 
-app.listen(3000, () => console.log("Server has started"));
+app.listen(process.env.PORT_NUMBER, () =>
+	console.log(`Server has started on port ${process.env.PORT_NUMBER}`)
+);
