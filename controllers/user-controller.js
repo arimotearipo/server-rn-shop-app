@@ -24,9 +24,14 @@ async function signup(req, res, next) {
 	});
 
 	try {
-		await newUser.save();
+		const user = await newUser.save();
 
-		res.status(201).json({ mesage: "Sucessfully saved user info to database" });
+		res
+			.status(201)
+			.json({
+				message: "Sucessfully saved user info to database",
+				id: user._id,
+			});
 	} catch (error) {
 		const e = new HttpError(error, 500);
 		return next(e);

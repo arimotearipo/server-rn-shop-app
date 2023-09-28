@@ -27,13 +27,15 @@ async function addProduct(req, res, next) {
 	const { name, price, description } = req.body;
 
 	try {
-		await ProductModel.create({
+		const product = await ProductModel.create({
 			name,
 			price,
 			description,
 		});
 
-		res.status(201).json({ message: "Sucessfully saved item to database" });
+		res
+			.status(201)
+			.json({ message: "Sucessfully saved item to database", data: product });
 	} catch (error) {
 		const e = new HttpError(error, 500);
 		return next(e);
@@ -44,9 +46,11 @@ async function deleteProduct(req, res, next) {
 	const { id } = req.params;
 
 	try {
-		await ProductModel.findByIdAndDelete(id);
+		const product = await ProductModel.findByIdAndDelete(id);
 
-		res.status(202).json({ message: "Sucessfully deleted item in database" });
+		res
+			.status(202)
+			.json({ message: "Sucessfully deleted item in database", data: product });
 	} catch (error) {
 		const e = new HttpError(error, 500);
 		return next(e);

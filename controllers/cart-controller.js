@@ -5,16 +5,28 @@ async function getCart(req, res, next) {
 	const { userId } = req.params;
 
 	try {
-		const { cartItems } = await UserModel.findOne({ _id: userId });
+		const { cartItems } = await UserModel.findOne({ _id: userId })
+			.populate({
+				path: "cartItems.product",
+				select: ["_id", "name", "price", "description"],
+			})
+			.lean();
 
-		const productCount = await cartItems.reduce(
+		const mappedCartItems = cartItems.map((item) => {
+			return {
+				...item.product,
+				quantity: item.quantity,
+			};
+		});
+
+		const productCount = mappedCartItems.reduce(
 			(total, cur) => total + cur.quantity,
 			0
 		);
 
 		res.status(200).json({
-			data: cartItems,
-			uniqueProductCount: cartItems.length,
+			data: mappedCartItems,
+			uniqueProductCount: mappedCartItems.length,
 			productCount,
 		});
 	} catch (error) {
@@ -41,4 +53,15 @@ async function updateCart(req, res, next) {
 module.exports = {
 	getCart,
 	updateCart,
+};
+
+const item = {
+	product: {
+		_id: "651480b874adbad2ffef4345",
+		name: "Laptop",
+		price: 2900,
+		description: "Do your work on it",
+		__v: 0,
+		quantity: 1,
+	},
 };
