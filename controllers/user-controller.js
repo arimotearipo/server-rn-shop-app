@@ -1,6 +1,9 @@
+const mongoose = require("mongoose");
 const UserModel = require("../models/user-model");
 const HttpError = require("../shared/HttpError");
 const cartController = require("./cart-controller");
+
+const conn = mongoose.connection;
 
 async function getUsers(_req, res, next) {
 	try {
@@ -17,24 +20,23 @@ async function getUsers(_req, res, next) {
 async function signup(req, res, next) {
 	const { fullname, username, password } = req.body;
 
-	const newUser = new UserModel({
-		fullname,
-		username,
-		password,
-	});
-
 	try {
+		const newUser = new UserModel({
+			fullname,
+			username,
+			password,
+		});
 		const user = await newUser.save();
 
-		res
-			.status(201)
-			.json({
-				message: "Sucessfully saved user info to database",
-				id: user._id,
-			});
+		await cartController.createCart(user._id);
+
+		res.status(201).json({
+			message: "Sucessfully saved user info to database",
+			id: user._id,
+		});
 	} catch (error) {
 		const e = new HttpError(error, 500);
-		return next(e);
+		next(e);
 	}
 }
 

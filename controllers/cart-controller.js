@@ -1,11 +1,12 @@
 const UserModel = require("../models/user-model");
+const CartModel = require("../models/cart-model");
 const HttpError = require("../shared/HttpError");
 
 async function getCart(req, res, next) {
 	const { userId } = req.params;
 
 	try {
-		const { cartItems } = await UserModel.findOne({ _id: userId })
+		const { cartItems } = await CartModel.findOne({ user: userId })
 			.populate({
 				path: "cartItems.product",
 				select: ["_id", "name", "price", "description"],
@@ -40,7 +41,7 @@ async function updateCart(req, res, next) {
 	const { userId } = req.params;
 
 	try {
-		await UserModel.findOneAndUpdate({ _id: userId }, { cartItems });
+		await CartModel.findOneAndUpdate({ user: userId }, { cartItems });
 		res
 			.status(201)
 			.json({ message: `Sucessfully updated cart for user: ${userId}` });
@@ -50,18 +51,21 @@ async function updateCart(req, res, next) {
 	}
 }
 
+async function createCart(userId, session) {
+	try {
+		const cartItem = new CartModel({
+			user: userId,
+		});
+
+		await cartItem.save({ session });
+	} catch (error) {
+		const e = new HttpError(error);
+		return next(e);
+	}
+}
+
 module.exports = {
 	getCart,
 	updateCart,
-};
-
-const item = {
-	product: {
-		_id: "651480b874adbad2ffef4345",
-		name: "Laptop",
-		price: 2900,
-		description: "Do your work on it",
-		__v: 0,
-		quantity: 1,
-	},
+	createCart,
 };
