@@ -1,4 +1,3 @@
-const UserModel = require("../models/user-model");
 const CartModel = require("../models/cart-model");
 const HttpError = require("../shared/HttpError");
 
@@ -25,10 +24,16 @@ async function getCart(req, res, next) {
 			0
 		);
 
+		const totalAmount = mappedCartItems.reduce(
+			(total, cur) => total + cur.price * cur.quantity,
+			0
+		);
+
 		res.status(200).json({
-			data: mappedCartItems,
+			line_items: mappedCartItems,
 			uniqueProductCount: mappedCartItems.length,
 			productCount,
+			totalAmount,
 		});
 	} catch (error) {
 		const e = new HttpError(error, 500);

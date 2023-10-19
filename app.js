@@ -5,6 +5,7 @@ const userRoutes = require("./router/user-route");
 const productRoutes = require("./router/product-route");
 const cartRoutes = require("./router/cart-route");
 const orderRoutes = require("./router/order-route");
+const paymentRoutes = require("./router/payment-route");
 const errorHandler = require("./middleware/error-handler");
 
 const app = express();
@@ -14,6 +15,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/order", orderRoutes);
+app.use("/api/payment", paymentRoutes);
 app.use(errorHandler);
 
 mongoose.connect(process.env.DB_CONNECTION);

@@ -1,9 +1,6 @@
-const mongoose = require("mongoose");
 const UserModel = require("../models/user-model");
 const HttpError = require("../shared/HttpError");
 const cartController = require("./cart-controller");
-
-const conn = mongoose.connection;
 
 async function getUsers(_req, res, next) {
 	try {
